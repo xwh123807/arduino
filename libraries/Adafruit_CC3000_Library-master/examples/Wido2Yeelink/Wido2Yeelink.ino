@@ -29,11 +29,6 @@ Note: Please don't forget to change the setting below before using!
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <SPI.h>
-
-#include <dht11.h>
-dht11 DHT;
-#define DHT11_PIN 12
-
 #define Wido_IRQ   7
 #define Wido_VBAT  5
 #define Wido_CS    10
@@ -44,15 +39,15 @@ SPI_CLOCK_DIVIDER); // you can change this clock speed
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
 
-#define WLAN_SSID       "xiangwanhongdeiMac"           // cannot be longer than 32 characters!
-#define WLAN_PASS       "20080819"          // For connecting router or AP, don't forget to set the SSID and password here!!
+#define WLAN_SSID       "myNetwork"           // cannot be longer than 32 characters!
+#define WLAN_PASS       "myPassword"          // For connecting router or AP, don't forget to set the SSID and password here!!
 
 
 #define TCP_TIMEOUT      3000
 //#define CC3000_TINY_DRIVER
 
 #define WEBSITE  "api.yeelink.net"
-#define API_key  "072a13d0e6aa8fa893f3f10cfb657fc8"  // Update Your API Key. To get your API Key, please check the link below
+#define API_key  "733115abefe88b0033c035ac9e000000"  // Update Your API Key. To get your API Key, please check the link below
                                                      // http://www.yeelink.net/user/user_profile
 
 void setup(){
@@ -95,7 +90,6 @@ void setup(){
 
 uint32_t ip = 0;
 float temp = 0;
-float humidity = 0;
 
 void loop(){
   
@@ -151,8 +145,8 @@ void loop(){
     // Send headers
     Serial.print(F("Sending headers"));
     
-    WidoClient.fastrprint(F("POST /v1.1/device/"));
-    WidoClient.fastrprint(F("345745/sensor/385096/datapoints"));  //Please change your device ID and sensor ID here, after creating
+    WidoClient.fastrprint(F("POST /v1.0/device/"));
+    WidoClient.fastrprint(F("100/sensor/20/datapoints"));  //Please change your device ID and sensor ID here, after creating
                                                            //Please check the link: http://www.yeelink.net/user/devices
                                                            //The example URL: http://api.yeelink.net/v1.0/device/100/sensor/20/datapoints
     WidoClient.fastrprintln(F(" HTTP/1.1"));
@@ -171,8 +165,7 @@ void loop(){
     Serial.print(F("."));
     
     Serial.println(F(" done."));
-
-    Serial.println(httpPackage);
+    
     // Send data
     Serial.print(F("Sending data"));
     WidoClient.fastrprintln(httpPackage);
@@ -199,34 +192,10 @@ void loop(){
     sensortStamp = millis();
     // read the LM35 sensor value and convert to the degrees every 100ms.
 
-    //  int reading = analogRead(0);
-    //  temp = reading *0.0048828125*100;
-    //  Serial.print(F("Real Time Temp: ")); 
-    //  Serial.println(temp); 
-
-    int chk;
-    Serial.print("DHT11, \t");
-    chk = DHT.read(DHT11_PIN);    // READ DATA
-    switch (chk){
-      case DHTLIB_OK:  
-                  Serial.print("OK,\t"); 
-                  break;
-      case DHTLIB_ERROR_CHECKSUM: 
-                  Serial.print("Checksum error,\t"); 
-                  break;
-      case DHTLIB_ERROR_TIMEOUT: 
-                  Serial.print("Time out error,\t"); 
-                  break;
-      default: 
-                  Serial.print("Unknown error,\t"); 
-                  break;
-    }
-    temp = DHT.temperature;
-    humidity = DHT.humidity;
-  // DISPLAT DATA
-    Serial.print(humidity,1);
-    Serial.print(",\t");
-    Serial.println(temp,1);    
+    int reading = analogRead(0);
+    temp = reading *0.0048828125*100;
+    Serial.print(F("Real Time Temp: ")); 
+    Serial.println(temp); 
   }
 }
 
